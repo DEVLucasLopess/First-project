@@ -3,63 +3,101 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use App\Models\Clients;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Support\Facades\DB;
-     class UserController extends Controller
-     {
+use Illuminate\Support\Arr;
+use Validator;
+use Date;
+
+class UserController extends Controller
+{
+    private $client;
+
+    public function __construct(Clients $client, User $user){
+        $this->client = $client;
+        $this->user = $user;
+    }
         
-            public function listAll()
-            {
-                $mysql = "mysql";
-                DB::connection($mysql)->select ("SELECT * FROM mydb.person");
-                $clientes = []; 
-                $clientes[0] = ['id'=> '1', 'nome' => 'mineiro', 'idade'=> '23', 'sexo' => 'masculino', 'endereco' => 'Rua Jagnada', 'numero' => '265', 'complemento' => 'zona 07', 'bairro' => 'zona 07', 'estado' => 'Parana', 'cidade' => 'Maringa' ];
-                $clientes[1] = ['id'=> '2', 'nome' => 'lucas', 'idade'=> '25', 'sexo' => 'masculino', 'endereco' => 'Rua Jagnada', 'numero' => '265', 'complemento' => 'zona 08', 'bairro' => 'Sarandi', 'estado' => 'Parana', 'cidade' => 'Maringa'];
-                return view('usuarios', ['clientes' => $clientes]);
+    public function getClient(Request $request)
+    {               
+            $clientes = $this->client->getClients(); 
+            return view('usuarios')
+            ->with('clientes', $clientes);
+    }
+
+    public function deleteClient(Request $request)
+    {
+      $id = $request->segments()[2];
+      if($this->client->deleteClient($id)){
+        return redirect()->route('home');
+      }
+    }
+
+         
+          public function getClientRegister(Request $request, $id = null){
+            $client = null;
+            if($id) {
+              $client  = $this->client->getClient($id);
             }
-
-            public function SendData(Request $request){
-
-            $result=DB::insert("insert into test (id, birthdate, name, genre) values (?,?,?)", ['1','04.11.1994', 'nome', 'genre']);
-            return view($result);
+             return view('novo-usuario')
+              ->with('client', $client);
 
           }
-            public function  save(Request $request){
 
-                $this->validate($request,[
+          public function postClient(Request $request){
+                $rules = [
+                        'name' => 'required',
+                        'birth' => 'required|date|before:today|after:1910-01-01|before_or_equal:18',
+                        'garnder' => 'required|integer|in:1,2',
+                        'zipcode' => 'required',
+                        'address' => 'required',
+                        'number' => 'required',
+                        'neighborhood' => 'required',
+                        'state' => 'required',
+                        'city' => 'required',                        
+                ];
 
-                    'age' => 'required|gte:18|min:1|max:999|numeric',
-                    'genre' => 'required|in:Masculino, Feminino',
-                    'name' => 'required',
-                    'address' => 'required',
-                    'number' => 'required',
-                    'complement' => 'required',
-                    'neighborhood' => 'required',
-                    'state' => 'required',
-                    'city' => 'required',
-                    ]);
-
-                    $name = $request->input('name');
-                    $age = $request->input('age');
-                    $genre = $request->input('genre');
-                    $address = $request->input('address');
-                    $number = $request->input('number');
-                    $complement = $request->input('complement');
-                    $neighborhood = $request->input('neighborhood');
-                    $state = $request->input('state');
-                    $city = $request->input('city');
-
-                    echo "genero: $genre <br>";
-                    echo "endereço: $address <br>";
-                    echo "numero: $number <br>";
-                    echo "complemento: $complement <br>";
-                    echo "bairro: $neighborhood <br>";
-                    echo "estado: $state <br>";
-                    echo "cidade: $city <br>";
-            
+                $validator = Validator::make($request->all(), $rules);
+                if($validator->fails()){
+                    return redirect()->back()
+                          ->withInput()
+                          ->withErrors($validator);
                 }
+
+               $dataClient = [                  
+                    'name' => $request->get('name'),
+                    'birthdate' => $request->get('birth'),
+                    'genre' => $request->get('garnder'),
+                    'postal_cold' => preg_replace("/[^0-9]/", "", $request->get('zipcode')), // filtro - remover mascara
+                    'addres' => $request->get('address'),
+                    'number' => $request->get('number'),
+                    'neighborhood'=> $request->get('neighborhood'), 
+                    'complement'=> $request->get('complement'),
+                    'city'=> $request->get('city'),
+                    'state'=> $request->get('state'),
+                ];
+                 
+                
+                if($request->get('idClient')){
+                   $dataClient = Arr::add($dataClient, 'id', $request->get('idClient'));
+                    if($this->client->updateClient($request->get('idClient'), $dataClient)){
+                      return redirect()->route('home');
+                    }
+                }
+
+                if($request->get('idClient') == null){
+                  if($this->client->create($dataClient)){
+                  return redirect()->route('home');
+                  }  
+                }
+
+
+                return redirect()->route('home');
+
+                           
+
+          }
+         
         }
-?>

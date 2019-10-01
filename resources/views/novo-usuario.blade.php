@@ -1,43 +1,109 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('layouts.default')
 
-        <title>Novo usuario</title>
-        <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
-        <link href="css/app.css" rel="stylesheet">
-        <link href="css/bootstrap.min.css" rel="stylesheet">
-        <link href="css/bootstrap-grid.min.css" rel="stylesheet">
-    <link href="{{asset('css/app.css')}}" rel="stylesheet" />
-    </head>
-      <body>
-        <div id="teste">  
-      <div class="p-3 mb-2 bg-dark text-white"><h2>Favor informar os dados do novo cliente:</h2></div>
-      <div class="menucentralizado">
-          @if(count($errors) !=0)
-                @foreach ($errors->all() as $erro)
-                  <p class="alert alert-danger"> {{$erro}} </p>   
-                @endforeach
-          @endif
-                      <form action="/novo-usuario" method="POST">
-                        @csrf <!-- Modo de segurança do Laravel -->
-                        <label>Nome: </label><input class="field" name="name" type="text" placeholder="Informe seu nome" required><br><br>
-                        <label>Idade: </label> <input class="field" name="age" type="text" placeholder="Informe sua idade" required><br><br>  
-                        <label>Genero: </label> <select class="field" type="select" name ="genre" required><br><br>
-                                  <option>Masculino</option>
-                                  <option>Feminino</option>
-                        </select><br><br>
-                       <label>Endereco: </label> <input class="field" name="address" type="text" placeholder="informe seu endereco" required><br><br>
-                       <label>Numero: </label> <input class="field" name="number" type="text" placeholder="informe seu numero" required><br><br>
-                       <label>Complemento: </label> <input class="field" name="complement" type="text" placeholder="informe seu complemento" required><br><br>
-                       <label>Bairro: </label> <input class="field" name="neighborhood" type="text" placeholder="informe seu bairro" required><br><br>
-                       <label>Estado: </label> <input class="field" name="state" type="text" placeholder="informe seu estado" required><br><br>
-                       <label>Cidade: </label> <input class="field" name="city" type="text" placeholder="informe sua cidade" required><br><br>
-                       <button type="submit" class="btn btn-dark">Salvar</button>
-                       <button type="button" class="btn btn-dark"><a href="/" style="color:inherit; text-decoration: none;">Voltar</a></button>
-                      </form>
+@push('styles')
+<link href="{{ asset('plugins/datepicker/css/bootstrap-datepicker.css') }}" rel="stylesheet">
+@endpush
+
+@push('scripts')
+<script src="{{ asset('js/validate.js') }}" type="text/javascript"></script>
+<script src="{{ asset('plugins/datepicker/js/bootstrap-datepicker.js') }}" type="text/javascript"></script>
+<script src="{{ asset('js/client/newClient.js') }}" type="text/javascript"></script>
+@endpush
+
+@section('content')
+<div class="p-3 mb-2 bg-dark text-white"><h2>Favor informar os dados do novo cliente:</h2></div>
+      <div class="menucentralizado">          
+          <form action="{{route('postClient')}}" id="formClient" autocomplete="off" method="POST">
+            @csrf <!-- Modo de segurança do Laravel -->
+            @if ($client && $client->id)
+              <input type="hidden" name="idClient" value="{{ $client->id }}">
+            @endif
+            <div class="p-3">
+              <div class="row">
+                <div class="col-12">
+                  <h4>Dados do Cliente</h4>
                 </div>
+              </div>
+              @if ($errors->any())
+              <div class="alert alert-danger">
+                  <ul>
+                      @foreach ($errors->all() as $error)
+                          <li>{{ $error }}</li>
+                      @endforeach
+                  </ul>
+              </div>
+          @endif
+              <div class="form-row">
+                  <div class="col-xl-6 col-sm-12 mb-3">
+                      <label for="name">Nome</label>
+                      <input type="text" name="name" class="form-control" autocomplete="off" value="{{ $client->name ?? null }}">
+                  </div>
+                  <div class="col-xl-4 col-sm-12 mb-3">
+                      <label for="birht">Data de Nascimento</label>
+                      <div class="input-group date" data-provide="datepicker">
+                          <input type="text"  name="birth" class="form-control" value="{{ $client->birthdate ?? null }}">
+                          <div class="input-group-addon">
+                              <span class="glyphicon glyphicon-th"></span>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-xl-4 col-sm-12 mb-3">
+                      <label class="col-12">Sexo</label>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="garnder" id="garnder1" value="1" @if($client && ($client->genre == 1)) checked @endif>
+                          <label class="form-check-label" for="garnder1">Masculino</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="garnder" id="garnder2" value="2" @if($client && ($client->genre == 2)) checked @endif>
+                          <label class="form-check-label" for="garnder2">Feminino</label>
+                        </div>                       
+                  </div>
+              </div>
+              <hr>
+              <div class="row">
+                  <div class="col-12">
+                    <h4>Endereço</h4>
+                  </div>
+                </div>
+                <div class="form-row">
+                    <div class="col-xl-4 col-sm-12 mb-3">
+                        <label for="zipcode">CEP</label>
+                        <input type="text" id="zipcode" name="zipcode" class="cep form-control" autocomplete="off"  value="{{ $client->postal_cold ?? null }}">
+                    </div>
+                    <div class="col-xl-4 col-sm-12 mb-3">
+                        <label for="address">Endereço</label>
+                        <input type="text" name="address" class="form-control" autocomplete="off"  value="{{ $client->addres ?? null }}">
+                    </div>
+                    <div class="col-xl-4 col-sm-12 mb-3">
+                        <label class="col-12" for="number">Numero</label>
+                        <input type="text" name="number" class="form-control" autocomplete="off"  value="{{ $client->number ?? null }}">                     
+                    </div>
+                    <div class="col-xl-4 col-sm-12 mb-3">
+                        <label for="complement">Complemento</label>
+                        <input type="text" name="complement" class="form-control" autocomplete="off"  value="{{ $client->complement ?? null }}">
+                    </div>
+                    <div class="col-xl-4 col-sm-12 mb-3">
+                        <label for="neighborhood">Bairro</label>
+                        <input type="text" name="neighborhood" class="form-control" autocomplete="off"  value="{{ $client->neighborhood ?? null }}">
+                    </div>
+                    <div class="col-xl-4 col-sm-12 mb-3">
+                        <label class="col-12" for="state">Estado</label>
+                        <input type="text" name="state" class="form-control" autocomplete="off"  value="{{ $client->state ?? null }}" >                     
+                    </div>
+                    <div class="col-xl-4 col-sm-12 mb-3">
+                        <label class="col-12" for="city">Cidade</label>
+                        <input type="text" name="city" class="form-control" autocomplete="off"  value="{{ $client->city ?? null }}">                     
+                    </div>
+                </div>
+                <div class="row">
+                  <div class="col-12"> 
+                    <div class="float-right">
+                      <a class="btn btn-primary" href="{{route('home')}}" style="color:inherit; text-decoration: none;">Voltar</a>
+                      <button type="submit" class="btn btn-dark" data-submit>Salvar</button>
+                    </div>
+                    </div> 
+                </div>
+            </div>                          
+          </form>
       </div>
-  </body>
-</html> 
+@endsection
