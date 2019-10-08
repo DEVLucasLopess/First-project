@@ -49,7 +49,7 @@ class UserController extends Controller
           public function postClient(Request $request){
                 $rules = [
                         'name' => 'required',
-                        'birth' => 'required|date|before:today|after:1910-01-01|before_or_equal:18',
+                        'birth' => 'required|date|before:today|after:1910-01-01',
                         'garnder' => 'required|integer|in:1,2',
                         'zipcode' => 'required',
                         'address' => 'required',

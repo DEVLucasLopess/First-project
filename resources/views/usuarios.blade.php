@@ -5,7 +5,7 @@
 @endpush
 
 @push('scripts')
-
+<script src="{{ asset('js/client/listClient.js') }}" type="text/javascript"></script>
 @endpush
 
 @section('content')
@@ -36,7 +36,7 @@
                         <th>Bairro</th>
                         <th>Cidade</th>
                         <th>Estado</th>
-                        <th>Ações</th>
+                        <th width='100px'>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -54,8 +54,10 @@
                        <td>{{ $cliente->city }}</td>
                        <td>{{ $cliente->state }}</td> 
                        <td>
-                       <a href="{{route('deliteClient', $cliente->id)}}" class="btn btn-danger btn-sm">Remover</a> 
-                       <a href="{{route('editClient', $cliente->id)}}" class="btn btn-primary btn-sm">Editar</a>
+                          <button  class="btn btn-danger  btn-sm modal-delete" data-toggle="modal" data-id="{{$cliente->id}}" data-target="#pergunta">
+                              <i class="fa fa-trash"></i>
+                          </button>
+                       <a href="{{route('editClient', $cliente->id)}}" class="btn btn-primary btn-sm"> <i class="fa fa-edit"></i></a>
                       </td>
                       </tr>
                     @endforeach
@@ -64,5 +66,21 @@
             </table>
         </div>
     </div>
+</div>
+<div class="modal fade" id="pergunta" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Deseja Remover o cliente?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary delete">Sim</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Não</button>
+      </div>
+    </div>
+  </div>
 </div>
 @endsection

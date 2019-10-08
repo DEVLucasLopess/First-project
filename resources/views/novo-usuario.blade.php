@@ -6,7 +6,7 @@
 
 @push('scripts')
 <script src="{{ asset('js/validate.js') }}" type="text/javascript"></script>
-<script src="{{ asset('plugins/datepicker/js/bootstrap-datepicker.js') }}" type="text/javascript"></script>
+
 <script src="{{ asset('js/client/newClient.js') }}" type="text/javascript"></script>
 @endpush
 
@@ -41,7 +41,7 @@
                   <div class="col-xl-4 col-sm-12 mb-3">
                       <label for="birht">Data de Nascimento</label>
                       <div class="input-group date" data-provide="datepicker">
-                          <input type="text"  name="birth" class="form-control" value="{{ $client->birthdate ?? null }}">
+                          <input type="date"  name="birth" class="form-control" value="{{ $client->birthdate ?? null }}">
                           <div class="input-group-addon">
                               <span class="glyphicon glyphicon-th"></span>
                           </div>
@@ -84,11 +84,11 @@
                     </div>
                     <div class="col-xl-4 col-sm-12 mb-3">
                         <label for="neighborhood">Bairro</label>
-                        <input type="text" name="neighborhood" class="form-control" autocomplete="off"  value="{{ $client->neighborhood ?? null }}">
+                        <input type="text" name="neighborhood" class="form-control" autocomplete="off" value="{{ $client->neighborhood ?? null }}">
                     </div>
                     <div class="col-xl-4 col-sm-12 mb-3">
                         <label class="col-12" for="state">Estado</label>
-                        <input type="text" name="state" class="form-control" autocomplete="off"  value="{{ $client->state ?? null }}" >                     
+                        <input type="text" name="state" class="form-control" autocomplete="off" value="{{ $client->state ?? null }}" >                     
                     </div>
                     <div class="col-xl-4 col-sm-12 mb-3">
                         <label class="col-12" for="city">Cidade</label>

@@ -118,17 +118,19 @@ var FormClientValidade = function(){
 
 }();
 
+
+
 var applyMask = function(){
     return{
         init: function(){
         $(".cep").mask("00.000-000");
         /* $(".date").setMask("39/19/9999$"); */
-        $(".date").datepicker({
+     /*    $(".date").datepicker({
         language: "pt-BR",
         format: "yyyy-mm-dd",
         todayHighlight: true,
         autoclose: true
-    });
+    }); */
         }
     }
 }();
@@ -153,7 +155,8 @@ var viaCep = function(){
                         $("#formClient").find('input[name=address]').empty().val(dados.logradouro);
                         $("#formClient").find('input[name=neighborhood]').empty().val(dados.bairro);
                         $("#formClient").find('input[name=city]').empty().val(dados.localidade);
-                        $("#formClient").find('input[name=state]').empty().val(dados.uf);
+                        $("#formClient").find('input[name=state]').empty().val(dados.uf);                        
+                        $("#formClient").find('input[name=number]').focus();
                     }else{
                         clearAndress();
                         alert("CEP não encontrado.");
